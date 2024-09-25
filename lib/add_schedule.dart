@@ -24,7 +24,7 @@ class _AddAlaramState extends State<AddAlarm> {
     'Wake up',
     'Go to the gym',
     'Breakfast',
-    'Meetings',
+    'Meeting',
     'Lunch',
     'Quick nap',
     'Go to the library',
@@ -34,7 +34,7 @@ class _AddAlaramState extends State<AddAlarm> {
   @override
   void initState() {
     controller = TextEditingController();
-    context.read<Alarmprovider>().GetData();
+    context.read<Alarmprovider>().getData();
     super.initState();
   }
 
@@ -81,13 +81,15 @@ class _AddAlaramState extends State<AddAlarm> {
                   CupertinoSwitch(
                     value: repeat,
                     onChanged: (bool value) {
-                      repeat = value;
                       setState(() {
+                        repeat = value;
                         if (repeat == true) {
                           name = "Everyday";
                         } else {
-                          name =
-                              DateFormat('EEE MMM d').format(notificationtime!);
+                          name = notificationtime != null
+                              ? DateFormat('EEE MMM d')
+                                  .format(notificationtime!)
+                              : "";
                         }
                       });
                     },
@@ -136,24 +138,23 @@ class _AddAlaramState extends State<AddAlarm> {
               ),
             ),
             const SizedBox(
-              height: 55,
+              height: 50,
             ),
             SizedBox(
-              width: MediaQuery.sizeOf(context).width * 0.7,
+              width: MediaQuery.sizeOf(context).width * 0.75,
               child: ElevatedButton(
                 onPressed: selectedActivity == null
                     ? null
                     : () {
                         Random random = Random();
                         int randomNumber = random.nextInt(100);
-
                         if (repeat) {
                           name = "Everyday";
                         } else {
                           name =
                               DateFormat('EEE MMM d').format(notificationtime!);
                         }
-                        context.read<Alarmprovider>().SetAlaram(
+                        context.read<Alarmprovider>().setAlaram(
                               controller.text, // Selected activity
                               dateTime!, // Formatted date/time
                               true, // Alarm is active by default
@@ -161,9 +162,9 @@ class _AddAlaramState extends State<AddAlarm> {
                               randomNumber, // Random ID for the alarm
                               milliseconds!, // Timestamp in milliseconds
                             );
-                        context.read<Alarmprovider>().SetData();
+                        context.read<Alarmprovider>().setData();
                         context.read<Alarmprovider>().secduleNotification(
-                            notificationtime!, randomNumber);
+                            notificationtime!, randomNumber, controller.text);
                         Navigator.pop(context);
                       },
                 style: ElevatedButton.styleFrom(

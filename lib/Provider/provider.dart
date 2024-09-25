@@ -18,7 +18,7 @@ class Alarmprovider extends ChangeNotifier {
 
   late BuildContext context;
 
-  SetAlaram(String label, String dateTime, bool check, String repeat, int id,
+  setAlaram(String label, String dateTime, bool check, String repeat, int id,
       int milliseconds) {
     modelist.add(Model(
         label: label,
@@ -29,15 +29,13 @@ class Alarmprovider extends ChangeNotifier {
         milliseconds: milliseconds));
     notifyListeners();
   }
-
-  EditSwitch(int index, bool check) {
+  editSwitch(int index, bool check) {
     modelist[index].check = check;
     notifyListeners();
   }
-
-  GetData() async {
+  getData() async {
     preferences = await SharedPreferences.getInstance();
-    await preferences.clear();
+    // await preferences.clear();
     List<String>? cominglist = preferences.getStringList("data");
     if (cominglist == null) {
     } else {
@@ -45,14 +43,12 @@ class Alarmprovider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  SetData() {
+  setData() {
     listofstring = modelist.map((e) => json.encode(e.toJson())).toList();
     preferences.setStringList("data", listofstring);
     notifyListeners();
   }
-
-  Inituilize(con) async {
+  inituilize(con) async {
     context = con;
     var androidInitilize =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -63,7 +59,6 @@ class Alarmprovider extends ChangeNotifier {
     await flutterLocalNotificationsPlugin!.initialize(initilizationsSettings,
         onDidReceiveNotificationResponse: onDidReceiveNotificationResponse);
   }
-
   void onDidReceiveNotificationResponse(
       NotificationResponse notificationResponse) async {
     final String? payload = notificationResponse.payload;
@@ -73,8 +68,7 @@ class Alarmprovider extends ChangeNotifier {
     await Navigator.push(
         context, MaterialPageRoute<void>(builder: (context) => const MyApp()));
   }
-
-  ShowNotification() async {
+  showNotification() async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
       'your channel id',
@@ -90,31 +84,53 @@ class Alarmprovider extends ChangeNotifier {
         0, 'plain title', 'plain body', notificationDetails,
         payload: 'item x');
   }
+  secduleNotification(DateTime datetim, int randomnumber, String label) async {
+  int newtime =
+      datetim.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch;
+  print(datetim.millisecondsSinceEpoch);
+  print(DateTime.now().millisecondsSinceEpoch);
+  print(newtime);
+  await flutterLocalNotificationsPlugin!.zonedSchedule(
+      randomnumber,
+      label,  // Use label value here
+      DateFormat.MMMEd().format(DateTime.now()),
+      tz.TZDateTime.now(tz.local).add(Duration(milliseconds: newtime)),
+      const NotificationDetails(
+          android: AndroidNotificationDetails(
+              'your channel id', 'your channel name',
+              channelDescription: 'your channel description',
+              sound: RawResourceAndroidNotificationSound("alarm"),
+              autoCancel: false,
+              playSound: true,
+              priority: Priority.max)),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime);
+}
 
-  secduleNotification(DateTime datetim, int Randomnumber) async {
-    int newtime =
-        datetim.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch;
-    print(datetim.millisecondsSinceEpoch);
-    print(DateTime.now().millisecondsSinceEpoch);
-    print(newtime);
-    await flutterLocalNotificationsPlugin!.zonedSchedule(
-        Randomnumber,
-        'Alarm Clock',
-        "${DateFormat().format(DateTime.now())}",
-        tz.TZDateTime.now(tz.local).add(Duration(milliseconds: newtime)),
-        const NotificationDetails(
-            android: AndroidNotificationDetails(
-                'your channel id', 'your channel name',
-                channelDescription: 'your channel description',
-                sound: RawResourceAndroidNotificationSound("alarm"),
-                autoCancel: false,
-                playSound: true,
-                priority: Priority.max)),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
-  }
-
+  // secduleNotification(DateTime datetim, int randomnumber) async {
+  //   int newtime =
+  //       datetim.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch;
+  //   print(datetim.millisecondsSinceEpoch);
+  //   print(DateTime.now().millisecondsSinceEpoch);
+  //   print(newtime);
+  //   await flutterLocalNotificationsPlugin!.zonedSchedule(
+  //       randomnumber,
+  //       'Alarm Clock',
+  //       DateFormat.MMMEd().format(DateTime.now()),
+  //       tz.TZDateTime.now(tz.local).add(Duration(milliseconds: newtime)),
+  //       const NotificationDetails(
+  //           android: AndroidNotificationDetails(
+  //               'your channel id', 'your channel name',
+  //               channelDescription: 'your channel description',
+  //               sound: RawResourceAndroidNotificationSound("alarm"),
+  //               autoCancel: false,
+  //               playSound: true,
+  //               priority: Priority.max)),
+  //       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  //       uiLocalNotificationDateInterpretation:
+  //           UILocalNotificationDateInterpretation.absoluteTime);
+  // }
   cancelNotification(int notificationid) async {
     await flutterLocalNotificationsPlugin!.cancel(notificationid);
   }

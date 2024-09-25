@@ -38,12 +38,12 @@ class _MyAppState extends State<MyApp> {
   bool value = false;
   @override
   void initState() {
-    context.read<Alarmprovider>().Inituilize(context);
+    context.read<Alarmprovider>().inituilize(context);
     Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
     });
     super.initState();
-    context.read<Alarmprovider>().GetData();
+    context.read<Alarmprovider>().getData();
   }
 
   @override
@@ -104,7 +104,7 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.only(left: 6, right: 6, top: 5),
+                    padding: const EdgeInsets.only(left: 6, right: 6),
                     height: MediaQuery.of(context).size.height -
                         topContainerHeight -
                         40,
@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
                             },
                             child: ListView.builder(
                                 padding:
-                                    const EdgeInsets.only(top: 6, bottom: 15),
+                                    const EdgeInsets.only(top: 5, bottom: 15),
                                 itemCount: alarm.modelist.length,
                                 itemBuilder: (buildContext, index) {
                                   return Card(
@@ -173,9 +173,8 @@ class _MyAppState extends State<MyApp> {
                                                         : alarm.modelist[index]
                                                             .check,
                                                     onChanged: (v) {
-                                                      alarm.EditSwitch(
+                                                      alarm.editSwitch(
                                                           index, v);
-
                                                       alarm.cancelNotification(
                                                           alarm.modelist[index]
                                                               .id!);
